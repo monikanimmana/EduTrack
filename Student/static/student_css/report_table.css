@@ -1,0 +1,96 @@
+/* ===== Page Background ===== */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Container ===== */
+.table-container {
+  width: 95%;
+  max-width: 1100px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* ===== Main Heading ===== */
+.table-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* ===== Table ===== */
+.table {
+  width: 100%;
+  border-collapse: collapse;   /* IMPORTANT FIX */
+}
+
+/* ===== Table Head ===== */
+.table thead {
+  background: #3498db;
+}
+
+.table thead tr {
+  display: table-row;          /* IMPORTANT FIX */
+}
+
+.table th {
+  padding: 14px;
+  color: #fff;
+  text-align: center;
+  font-size: 15px;
+  text-transform: uppercase;
+}
+
+/* ===== Table Body ===== */
+.table td {
+  padding: 12px;
+  text-align: center;
+  background: #ffffff;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+/* Row hover */
+.table tbody tr:hover {
+  background: #f0f9ff;
+}
+
+/* ===== Links ===== */
+.table td a {
+  color: #2980b9;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.table td a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Pagination ===== */
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pagination a,
+.pagination span {
+  display: inline-block;
+  margin: 0 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #3498db;
+  color: white;
+  text-decoration: none;
+}
+
+.current-page {
+  background: #2ecc71;
+}

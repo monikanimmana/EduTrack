@@ -1,0 +1,128 @@
+/* ===== General Styles ===== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    color: #34495e;
+}
+
+/* ===== Container ===== */
+.result-container {
+    width: 95%;
+    max-width: 900px;
+    margin-top: 60px;
+    padding: 30px 35px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0px 12px 25px rgba(0,0,0,0.08);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* ===== Info Section ===== */
+.info-box {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.info-box h4 {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 12px;
+    background: #f8f9fa;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    text-align: center;
+    flex: 1 1 45%;
+    margin: 5px;
+}
+
+.info-box h4.rank {
+    color: #e74c3c;
+}
+
+.info-box h4.total {
+    color: #27ae60;
+}
+
+.info-box h4:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0px 6px 15px rgba(0,0,0,0.12);
+}
+
+/* ===== Table Styles ===== */
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.table thead {
+    background: #3498db;
+    color: #ffffff;
+    border-radius: 12px;
+}
+
+.table th {
+    padding: 14px 10px;
+    font-weight: 600;
+    font-size: 15px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.table td {
+    padding: 14px 10px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.06);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover Effects */
+.table tr:hover td {
+    background: #ecf6ff;
+    transform: scale(1.02);
+    box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
+}
+
+/* Rounded Table Header */
+.table thead tr th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.table thead tr th:last-child {
+    border-top-right-radius: 12px;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+    .info-box {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .info-box h4 {
+        flex: 1 1 100%;
+        margin: 8px 0;
+    }
+
+    .table th, .table td {
+        font-size: 14px;
+        padding: 10px 6px;
+    }
+}

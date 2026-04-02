@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'student_css/see_marks.css' %}">
+</head>
+<body>
+
+    <div class="result-container">
+
+        <div class="info-box">
+            <h4 class="rank">Rank: {{ rank }}</h4>
+            <h4 class="total">Total: {{ totals.total }}</h4>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Subject Name</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stu in marks_each %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ stu.subject.subject }}</td>
+                    <td>{{ stu.marks }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>
