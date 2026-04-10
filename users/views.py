@@ -10,7 +10,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import CustomUser
 from .serializers import CustomTokenObtainPairSerializer, UserSerializer
-from .permissions import IsTeacher
+from .permissions import IsAdmin
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -41,7 +41,7 @@ def login_view(request):
         if user:
             login(request, user)
             return redirect('dashboard')
-        messages.error(request, 'Invalid credentials')
+        messages.error(request, 'Invalid credentials ❌')
     return render(request, 'auth/login.html')
 
 
@@ -52,6 +52,51 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    if request.user.is_teacher():
-        return render(request, 'teacher/dashboard.html')
-    return render(request, 'student/dashboard.html')
+    user = request.user
+
+    if user.is_admin():
+        from students.models import Student, Department, TeacherProfile
+        from marks.models import Marks
+        from fees.models import Fee
+        from attendance.models import Attendance, Session
+        from django.utils import timezone
+
+        context = {
+            'total_students':  Student.objects.count(),
+            'total_teachers':  TeacherProfile.objects.count(),
+            'total_depts':     Department.objects.count(),
+            'unpaid_fees':     Fee.objects.filter(status='unpaid').count(),
+            'present_today':   Attendance.objects.filter(session__date=timezone.now().date(), status='present').count(),
+            'active_sessions': Session.objects.filter(is_active=True).count(),
+            'teachers':        TeacherProfile.objects.select_related('user').prefetch_related('subjects')[:5],
+        }
+        return render(request, 'admin/dashboard.html', context)
+
+    if user.is_teacher():
+        from students.models import TeacherProfile, Student
+        from marks.models import Marks
+        from attendance.models import Session, Attendance
+        from django.utils import timezone
+
+        try:
+            profile = user.teacher_profile
+            my_subjects = profile.subjects.all()
+        except Exception:
+            my_subjects = []
+
+        context = {
+            'my_subjects':     my_subjects,
+            'total_students':  Student.objects.count(),
+            'my_sessions':     Session.objects.filter(created_by=user).count(),
+            'present_today':   Attendance.objects.filter(session__date=timezone.now().date(), session__created_by=user, status='present').count(),
+        }
+        return render(request, 'teacher/dashboard.html', context)
+
+    # Student
+    from students.models import Student
+    from django.shortcuts import get_object_or_404
+    try:
+        student = user.student_profile
+    except Exception:
+        student = None
+    return render(request, 'student/dashboard.html', {'student': student})

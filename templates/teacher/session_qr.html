@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}QR Code - {{ session.subject.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.qr-page {
+    max-width: 480px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    text-align: center;
+}
+.qr-page-header {
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    color: white;
+    padding: 24px;
+}
+.qr-page-header h2 { margin: 0 0 6px; font-size: 1.4rem; }
+.qr-page-header p  { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+
+.qr-page-body { padding: 32px; }
+.qr-page-body img {
+    width: 280px;
+    height: 280px;
+    border: 4px solid #e8eaf6;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+.qr-info { margin-bottom: 24px; }
+.qr-info .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+}
+.qr-info .info-row:last-child { border-bottom: none; }
+.qr-info .info-row span:first-child { color: #888; }
+.qr-info .info-row span:last-child  { font-weight: 600; color: #1a237e; }
+
+.qr-actions { display: flex; gap: 10px; justify-content: center; }
+
+@media print {
+    .navbar, .qr-actions, .breadcrumb { display: none !important; }
+    .qr-page { box-shadow: none; margin: 0; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="qr-page">
+    <div class="qr-page-header">
+        <h2>{{ session.subject.name }}</h2>
+        <p>Scan QR code to mark attendance</p>
+    </div>
+    <div class="qr-page-body">
+        <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code">
+
+        <div class="qr-info">
+            <div class="info-row">
+                <span>Date</span>
+                <span>{{ session.date }}</span>
+            </div>
+            <div class="info-row">
+                <span>Time</span>
+                <span>{{ session.start_time }}</span>
+            </div>
+            <div class="info-row">
+                <span>Status</span>
+                <span>{% if session.is_active %}✅ Active{% else %}❌ Inactive{% endif %}</span>
+            </div>
+            <div class="info-row">
+                <span>Valid Until</span>
+                <span>{% if session.qr_valid_until %}{{ session.qr_valid_until|date:"d M Y, H:i" }}{% else %}—{% endif %}</span>
+            </div>
+        </div>
+
+        <div class="qr-actions">
+            <button onclick="window.print()" class="btn btn-primary">🖨 Print QR</button>
+            <a href="{% url 'attendance' %}" class="btn btn-secondary">← Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

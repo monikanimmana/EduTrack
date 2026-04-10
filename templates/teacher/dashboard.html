@@ -1,37 +1,119 @@
 {% extends 'base.html' %}
 {% block title %}Teacher Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.welcome-bar {
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    color: white; border-radius: 12px;
+    padding: 28px 32px; margin-bottom: 28px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.welcome-bar h2 { margin: 0 0 4px; font-size: 1.5rem; }
+.welcome-bar p  { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+
+.stats-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px; margin-bottom: 28px;
+}
+.stat-box {
+    background: white; border-radius: 10px; padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 14px;
+}
+.stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+.stat-info .num { font-size: 1.7rem; font-weight: 700; color: #1a237e; line-height: 1; }
+.stat-info .lbl { font-size: 0.78rem; color: #888; margin-top: 4px; }
+
+.subjects-panel {
+    background: white; border-radius: 10px; padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 28px;
+}
+.subjects-panel h3 { color: #1a237e; margin-bottom: 14px; }
+.subject-chip {
+    display: inline-block; background: #e8eaf6; color: #1a237e;
+    padding: 6px 16px; border-radius: 20px; font-size: 0.88rem;
+    font-weight: 600; margin: 4px;
+}
+
+.action-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+}
+.action-card {
+    background: white; border-radius: 10px; padding: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.action-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+.action-card .card-icon { font-size: 2rem; margin-bottom: 10px; }
+.action-card h3 { color: #1a237e; margin-bottom: 6px; font-size: 0.95rem; }
+.action-card p  { color: #888; font-size: 0.8rem; margin-bottom: 14px; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="dashboard">
-    <h2>Welcome, {{ user.get_full_name|default:user.username }} 👋</h2>
-    <p class="role-badge teacher">Teacher</p>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Students</h3>
-            <a href="{% url 'student_list' %}" class="btn btn-primary">Manage Students</a>
-        </div>
-        <div class="stat-card">
-            <h3>Marks</h3>
-            <a href="{% url 'marks' %}" class="btn btn-primary">Manage Marks</a>
-        </div>
-        <div class="stat-card">
-            <h3>Fees</h3>
-            <a href="{% url 'fees' %}" class="btn btn-primary">Manage Fees</a>
-        </div>
-        <div class="stat-card">
-            <h3>Attendance</h3>
-            <a href="{% url 'attendance' %}" class="btn btn-primary">Manage Attendance</a>
-        </div>
+<div class="welcome-bar">
+    <div>
+        <h2>Welcome, {{ user.get_full_name|default:user.username }} 👋</h2>
+        <p>Manage your subjects, marks and attendance sessions.</p>
     </div>
+    <div style="font-size:3rem;">👨‍🏫</div>
+</div>
 
-    <div class="quick-links">
-        <h3>API Endpoints</h3>
-        <ul>
-            <li><a href="/students/api/students/" target="_blank">Students API</a></li>
-            <li><a href="/marks/api/marks/" target="_blank">Marks API</a></li>
-            <li><a href="/fees/api/fees/" target="_blank">Fees API</a></li>
-            <li><a href="/attendance/api/sessions/" target="_blank">Sessions API</a></li>
-        </ul>
+<!-- Stats -->
+<div class="stats-row">
+    <div class="stat-box">
+        <div class="stat-icon" style="background:#e8eaf6;">📚</div>
+        <div class="stat-info"><div class="num">{{ my_subjects|length }}</div><div class="lbl">My Subjects</div></div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-icon" style="background:#e8f5e9;">👨‍🎓</div>
+        <div class="stat-info"><div class="num">{{ total_students }}</div><div class="lbl">Total Students</div></div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-icon" style="background:#e0f2f1;">✅</div>
+        <div class="stat-info"><div class="num">{{ present_today }}</div><div class="lbl">Present Today</div></div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-icon" style="background:#fff8e1;">📡</div>
+        <div class="stat-info"><div class="num">{{ my_sessions }}</div><div class="lbl">My Sessions</div></div>
+    </div>
+</div>
+
+<!-- Assigned subjects -->
+<div class="subjects-panel">
+    <h3>📚 My Assigned Subjects</h3>
+    {% for s in my_subjects %}
+    <span class="subject-chip">{{ s.name }}</span>
+    {% empty %}
+    <p style="color:#888;">No subjects assigned yet. Contact admin.</p>
+    {% endfor %}
+</div>
+
+<!-- Actions -->
+<div class="action-grid">
+    <div class="action-card">
+        <div class="card-icon">👨‍🎓</div>
+        <h3>Students</h3>
+        <p>View all student records</p>
+        <a href="{% url 'student_list' %}" class="btn btn-primary">View Students</a>
+    </div>
+    <div class="action-card">
+        <div class="card-icon">📝</div>
+        <h3>Marks</h3>
+        <p>Manage marks for your subjects</p>
+        <a href="{% url 'marks' %}" class="btn btn-primary">Manage Marks</a>
+    </div>
+    <div class="action-card">
+        <div class="card-icon">📅</div>
+        <h3>Attendance</h3>
+        <p>Your sessions and attendance</p>
+        <a href="{% url 'attendance' %}" class="btn btn-primary">Attendance</a>
+    </div>
+    <div class="action-card">
+        <div class="card-icon">💳</div>
+        <h3>Fees</h3>
+        <p>View student fee status</p>
+        <a href="{% url 'fees' %}" class="btn btn-primary">View Fees</a>
     </div>
 </div>
 {% endblock %}

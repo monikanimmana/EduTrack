@@ -1,23 +1,170 @@
 {% extends 'base.html' %}
-{% block title %}Attendance{% endblock %}
+{% block title %}Attendance Sessions{% endblock %}
+
+{% block extra_css %}
+<style>
+.sessions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.session-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.session-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.session-card-header {
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    color: white;
+    padding: 16px 20px;
+}
+.session-card-header h3 { margin: 0 0 4px; font-size: 1rem; }
+.session-card-header .meta { font-size: 0.82rem; opacity: 0.85; }
+
+.session-card-body {
+    padding: 16px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.qr-wrap {
+    flex-shrink: 0;
+    text-align: center;
+}
+.qr-wrap img {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    border: 3px solid #e8eaf6;
+    display: block;
+}
+.qr-wrap .qr-label {
+    font-size: 0.72rem;
+    color: #888;
+    margin-top: 6px;
+}
+
+.session-details { flex: 1; }
+.session-details .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 0.85rem;
+}
+.session-details .detail-row:last-child { border-bottom: none; }
+.session-details .detail-row span:first-child { color: #888; }
+.session-details .detail-row span:last-child { font-weight: 500; color: #333; }
+
+.status-active   { color: #2e7d32; font-weight: 600; }
+.status-inactive { color: #c62828; font-weight: 600; }
+
+.session-card-footer {
+    padding: 12px 20px;
+    background: #f8f9ff;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    gap: 8px;
+}
+
+.page-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-state p { color: #888; }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Attendance Sessions</h2>
-<table class="table">
-    <thead>
-        <tr><th>Subject</th><th>Date</th><th>Start</th><th>Active</th><th>QR Code</th></tr>
-    </thead>
-    <tbody>
-        {% for s in sessions %}
-        <tr>
-            <td>{{ s.subject.name }}</td>
-            <td>{{ s.date }}</td>
-            <td>{{ s.start_time }}</td>
-            <td>{% if s.is_active %}✅{% else %}❌{% endif %}</td>
-            <td><a href="/attendance/api/sessions/{{ s.id }}/qr_image/" target="_blank">View QR</a></td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5">No sessions yet.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="page-top">
+    <h2>📅 Attendance Sessions</h2>
+</div>
+
+{% if sessions %}
+<div class="sessions-grid">
+    {% for s in sessions %}
+    <div class="session-card">
+
+        <div class="session-card-header">
+            <h3>{{ s.subject.name }}</h3>
+            <div class="meta">📅 {{ s.date }} &nbsp;|&nbsp; 🕐 {{ s.start_time }}</div>
+        </div>
+
+        <div class="session-card-body">
+            <!-- QR Code image -->
+            <div class="qr-wrap">
+                <img src="data:image/png;base64,{{ s.qr_b64 }}" alt="QR Code for {{ s.subject.name }}">
+                <div class="qr-label">Scan to mark attendance</div>
+            </div>
+
+            <!-- Session details -->
+            <div class="session-details">
+                <div class="detail-row">
+                    <span>Status</span>
+                    <span class="{% if s.is_active %}status-active{% else %}status-inactive{% endif %}">
+                        {% if s.is_active %}● Active{% else %}● Inactive{% endif %}
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span>QR Valid Until</span>
+                    <span>
+                        {% if s.qr_valid_until %}
+                            {{ s.qr_valid_until|date:"d M, H:i" }}
+                        {% else %}—{% endif %}
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span>QR Expired</span>
+                    <span>{% if s.is_qr_valid %}✅ Valid{% else %}❌ Expired{% endif %}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Attendees</span>
+                    <span>{{ s.attendances.count }} students</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="session-card-footer">
+            <a href="{% url 'session_qr' s.id %}"
+               target="_blank" class="btn btn-secondary" style="font-size:0.82rem;">
+                🖨 Full QR
+            </a>
+            <a href="{% url 'session_records' s.id %}"
+               class="btn btn-secondary" style="font-size:0.82rem;">
+                📋 View Records
+            </a>
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-state">
+    <div class="icon">📅</div>
+    <h3>No Sessions Yet</h3>
+    <p>Create attendance sessions via the API to get started.</p>
+</div>
+{% endif %}
+
 {% endblock %}

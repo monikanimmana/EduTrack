@@ -5,7 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Fee
 from .serializers import FeeSerializer
-from users.permissions import IsTeacher, IsTeacherOrReadOnly
+from users.permissions import IsTeacherOrReadOnly
 from students.models import Student
 
 
@@ -27,9 +27,44 @@ class FeeViewSet(viewsets.ModelViewSet):
 
 @login_required
 def fees_view(request):
-    if request.user.is_teacher():
+    user = request.user
+
+    if user.is_admin() or user.is_teacher():
         fees = Fee.objects.select_related('student__user').all()
-        return render(request, 'teacher/fees.html', {'fees': fees})
-    student = get_object_or_404(Student, user=request.user)
+
+        # summary stats
+        from django.db.models import Sum, Count
+        total_amount  = fees.aggregate(t=Sum('amount'))['t'] or 0
+        total_paid    = fees.aggregate(t=Sum('paid_amount'))['t'] or 0
+        count_paid    = fees.filter(status='paid').count()
+        count_unpaid  = fees.filter(status='unpaid').count()
+        count_partial = fees.filter(status='partial').count()
+
+        # filter by status
+        status_filter = request.GET.get('status', '')
+        if status_filter:
+            fees = fees.filter(status=status_filter)
+
+        # search
+        search = request.GET.get('q', '')
+        if search:
+            fees = fees.filter(student__student_id__icontains=search) | \
+                   fees.filter(student__user__first_name__icontains=search) | \
+                   fees.filter(student__user__last_name__icontains=search)
+
+        return render(request, 'teacher/fees.html', {
+            'fees': fees,
+            'total_amount':  total_amount,
+            'total_paid':    total_paid,
+            'total_due':     total_amount - total_paid,
+            'count_paid':    count_paid,
+            'count_unpaid':  count_unpaid,
+            'count_partial': count_partial,
+            'status_filter': status_filter,
+            'search':        search,
+        })
+
+    # Student
+    student = get_object_or_404(Student, user=user)
     fees = Fee.objects.filter(student=student)
     return render(request, 'student/fees.html', {'fees': fees})

@@ -1,23 +1,23 @@
 {% extends 'base.html' %}
 {% block title %}My Fees{% endblock %}
 {% block content %}
-<h2>My Fee Status</h2>
+<h2>💳 My Fee Status</h2>
 <table class="table">
     <thead>
-        <tr><th>Description</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Status</th><th>Due Date</th></tr>
+        <tr><th>#</th><th>Description</th><th>Amount</th><th>Paid</th><th>Status</th><th>Due Date</th></tr>
     </thead>
     <tbody>
         {% for f in fees %}
         <tr>
+            <td>{{ forloop.counter }}</td>
             <td>{{ f.description }}</td>
-            <td>{{ f.amount }}</td>
-            <td>{{ f.paid_amount }}</td>
-            <td>{{ f.amount|add:"-"|add:f.paid_amount }}</td>
+            <td>₹{{ f.amount }}</td>
+            <td>₹{{ f.paid_amount }}</td>
             <td><span class="badge badge-{{ f.status }}">{{ f.get_status_display }}</span></td>
             <td>{{ f.due_date }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="6">No fee records.</td></tr>
+        <tr><td colspan="6" style="text-align:center;color:#888;">No fee records.</td></tr>
         {% endfor %}
     </tbody>
 </table>

@@ -1,24 +1,214 @@
 {% extends 'base.html' %}
 {% block title %}Marks Management{% endblock %}
+
+{% block extra_css %}
+<style>
+.marks-wrapper { display: flex; flex-direction: column; gap: 20px; }
+
+.student-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.student-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: #1a237e;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+}
+
+.student-card-header:hover { background: #283593; }
+
+.student-info { display: flex; align-items: center; gap: 16px; }
+.student-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.student-name { font-size: 1rem; font-weight: 600; }
+
+.header-stats { display: flex; gap: 20px; align-items: center; font-size: 0.85rem; }
+.stat { display: flex; flex-direction: column; align-items: center; }
+.stat span:first-child { font-size: 1.1rem; font-weight: 700; }
+.stat span:last-child { font-size: 0.7rem; opacity: 0.8; }
+
+.toggle-icon { font-size: 1.2rem; transition: transform 0.2s; }
+.collapsed .toggle-icon { transform: rotate(-90deg); }
+
+.marks-table-wrap { padding: 0 20px 20px; display: block; }
+.marks-table-wrap.hidden { display: none; }
+
+.marks-grid {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+.marks-grid th {
+    background: #e8eaf6;
+    color: #1a237e;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.marks-grid td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+}
+.marks-grid tr:last-child td { border-bottom: none; }
+.marks-grid tr:hover td { background: #f5f7ff; }
+
+.progress-bar-wrap {
+    background: #e0e0e0;
+    border-radius: 10px;
+    height: 8px;
+    width: 120px;
+    overflow: hidden;
+}
+.progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    background: #1a237e;
+}
+.progress-bar.high { background: #2e7d32; }
+.progress-bar.mid  { background: #f57f17; }
+.progress-bar.low  { background: #c62828; }
+
+.grade-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+.g-ap { background:#c8e6c9; color:#1b5e20; }
+.g-a  { background:#dcedc8; color:#33691e; }
+.g-b  { background:#bbdefb; color:#0d47a1; }
+.g-c  { background:#fff9c4; color:#f57f17; }
+.g-d  { background:#ffe0b2; color:#e65100; }
+.g-f  { background:#ffcdd2; color:#b71c1c; }
+
+.page-top {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 24px;
+}
+.expand-all-btn {
+    background: #e8eaf6; color: #1a237e;
+    border: none; padding: 8px 18px;
+    border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+}
+.expand-all-btn:hover { background: #c5cae9; }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Marks Management</h2>
-<p>Use the <a href="/marks/api/marks/" target="_blank">Marks API</a> to assign/update marks.</p>
-<table class="table">
-    <thead>
-        <tr><th>Student ID</th><th>Name</th><th>Subjects & Scores</th></tr>
-    </thead>
-    <tbody>
-        {% for s in students %}
-        <tr>
-            <td>{{ s.student_id }}</td>
-            <td>{{ s.user.get_full_name }}</td>
-            <td>
-                {% for m in s.marks.all %}
-                    {{ m.subject.name }}: {{ m.score }}/{{ m.max_score }} ({{ m.grade }}){% if not forloop.last %}, {% endif %}
-                {% empty %}No marks{% endfor %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="page-top">
+    <h2>Marks Management</h2>
+    <button class="expand-all-btn" onclick="toggleAll()">Expand All</button>
+</div>
+
+<div class="marks-wrapper">
+{% for s in students %}
+{% with s.marks.all as student_marks %}
+{% if student_marks %}
+
+{% comment %}Calculate total and avg in template{% endcomment %}
+<div class="student-card" id="card-{{ s.id }}">
+    <div class="student-card-header" onclick="toggleCard('body-{{ s.id }}', this)">
+        <div class="student-info">
+            <span class="student-badge">{{ s.student_id }}</span>
+            <span class="student-name">{{ s.user.get_full_name }}</span>
+            <span style="opacity:0.7; font-size:0.82rem;">{{ s.department }}</span>
+        </div>
+        <div class="header-stats">
+            <div class="stat">
+                <span>{{ student_marks|length }}</span>
+                <span>Subjects</span>
+            </div>
+            <span class="toggle-icon">▼</span>
+        </div>
+    </div>
+
+    <div class="marks-table-wrap hidden" id="body-{{ s.id }}">
+        <table class="marks-grid">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Subject</th>
+                    <th>Score</th>
+                    <th>Max</th>
+                    <th>Percentage</th>
+                    <th>Progress</th>
+                    <th>Grade</th>
+                    <th>Exam Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in student_marks %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ m.subject.name }}</strong></td>
+                    <td>{{ m.score }}</td>
+                    <td>{{ m.max_score }}</td>
+                    <td>{{ m.percentage }}%</td>
+                    <td>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar {% if m.percentage >= 70 %}high{% elif m.percentage >= 50 %}mid{% else %}low{% endif %}"
+                                 style="width:{{ m.percentage }}%"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="grade-pill
+                            {% if m.grade == 'A+' %}g-ap
+                            {% elif m.grade == 'A' %}g-a
+                            {% elif m.grade == 'B' %}g-b
+                            {% elif m.grade == 'C' %}g-c
+                            {% elif m.grade == 'D' %}g-d
+                            {% else %}g-f{% endif %}">
+                            {{ m.grade }}
+                        </span>
+                    </td>
+                    <td>{{ m.exam_date|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endif %}
+{% endwith %}
+{% empty %}
+<p>No students found.</p>
+{% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleCard(bodyId, header) {
+    const body = document.getElementById(bodyId);
+    body.classList.toggle('hidden');
+    header.parentElement.classList.toggle('collapsed');
+}
+
+function toggleAll() {
+    const bodies = document.querySelectorAll('.marks-table-wrap');
+    const headers = document.querySelectorAll('.student-card-header');
+    const anyHidden = [...bodies].some(b => b.classList.contains('hidden'));
+    bodies.forEach(b => b.classList.toggle('hidden', !anyHidden));
+    headers.forEach(h => h.parentElement.classList.toggle('collapsed', !anyHidden));
+    document.querySelector('.expand-all-btn').textContent = anyHidden ? 'Collapse All' : 'Expand All';
+}
+</script>
 {% endblock %}

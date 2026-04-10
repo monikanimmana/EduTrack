@@ -1,4 +1,5 @@
 import io
+import base64
 import qrcode
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -14,6 +15,13 @@ from .models import Session, Attendance
 from .serializers import SessionSerializer, AttendanceSerializer, QRAttendanceSerializer
 from users.permissions import IsTeacher, IsTeacherOrReadOnly
 from students.models import Student
+
+
+def generate_qr_base64(url):
+    img = qrcode.make(url)
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
 
 
 class SessionViewSet(viewsets.ModelViewSet):
@@ -78,12 +86,35 @@ class QRScanView(APIView):
 
 @login_required
 def attendance_view(request):
-    if request.user.is_teacher():
+    user = request.user
+    if user.is_admin():
         sessions = Session.objects.select_related('subject').all()
-        return render(request, 'teacher/attendance.html', {'sessions': sessions})
-    student = get_object_or_404(Student, user=request.user)
-    records = Attendance.objects.filter(student=student).select_related('session__subject')
-    return render(request, 'student/attendance.html', {'records': records})
+    elif user.is_teacher():
+        sessions = Session.objects.select_related('subject').filter(created_by=user)
+    else:
+        student = get_object_or_404(Student, user=user)
+        records = Attendance.objects.filter(student=student).select_related('session__subject')
+        return render(request, 'student/attendance.html', {'records': records})
+
+    for s in sessions:
+        qr_url = request.build_absolute_uri(f'/attendance/scan/{s.qr_token}/')
+        s.qr_b64 = generate_qr_base64(qr_url)
+    return render(request, 'teacher/attendance.html', {'sessions': sessions})
+
+
+@login_required
+def session_qr_view(request, session_id):
+    session = get_object_or_404(Session, id=session_id)
+    qr_url = request.build_absolute_uri(f'/attendance/scan/{session.qr_token}/')
+    qr_b64 = generate_qr_base64(qr_url)
+    return render(request, 'teacher/session_qr.html', {'session': session, 'qr_b64': qr_b64, 'qr_url': qr_url})
+
+
+@login_required
+def session_records_view(request, session_id):
+    session = get_object_or_404(Session, id=session_id)
+    records = Attendance.objects.filter(session=session).select_related('student__user')
+    return render(request, 'teacher/session_records.html', {'session': session, 'records': records})
 
 
 @login_required

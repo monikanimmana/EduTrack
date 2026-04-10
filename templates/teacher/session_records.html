@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Records - {{ session.subject.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.records-header {
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    color: white;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.records-header h2 { margin: 0 0 4px; }
+.records-header p  { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+
+.summary-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.summary-pill {
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.pill-total   { background: #e8eaf6; color: #1a237e; }
+.pill-present { background: #e8f5e9; color: #2e7d32; }
+.pill-absent  { background: #ffebee; color: #c62828; }
+.pill-late    { background: #fff8e1; color: #f57f17; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="records-header">
+    <div>
+        <h2>📋 {{ session.subject.name }} — Attendance</h2>
+        <p>📅 {{ session.date }} &nbsp;|&nbsp; 🕐 {{ session.start_time }}</p>
+    </div>
+    <a href="{% url 'attendance' %}" class="btn btn-secondary">← Back</a>
+</div>
+
+<!-- Summary pills -->
+<div class="summary-row">
+    <span class="summary-pill pill-total">Total: {{ records.count }}</span>
+    <span class="summary-pill pill-present">Present: {{ records|length }}</span>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Method</th>
+            <th>Marked At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ r.student.student_id }}</td>
+            <td>{{ r.student.user.get_full_name }}</td>
+            <td>
+                <span class="badge badge-{{ r.status }}">
+                    {{ r.get_status_display }}
+                </span>
+            </td>
+            <td>{{ r.get_method_display }}</td>
+            <td>{{ r.marked_at|date:"d M Y, H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;color:#888;">No attendance records for this session.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

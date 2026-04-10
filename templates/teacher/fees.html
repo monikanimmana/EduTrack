@@ -1,24 +1,147 @@
 {% extends 'base.html' %}
 {% block title %}Fees Management{% endblock %}
+
+{% block extra_css %}
+<style>
+.fee-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.fee-stat-box {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    text-align: center;
+}
+.fee-stat-box .num {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+.fee-stat-box .lbl { font-size: 0.8rem; color: #888; }
+.num-blue   { color: #1a237e; }
+.num-green  { color: #2e7d32; }
+.num-red    { color: #c62828; }
+.num-orange { color: #f57f17; }
+
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.filter-bar input {
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 200px;
+}
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: #333;
+}
+.filter-btn.active-paid    { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; font-weight: 600; }
+.filter-btn.active-unpaid  { background: #ffebee; color: #c62828; border-color: #c62828; font-weight: 600; }
+.filter-btn.active-partial { background: #fff8e1; color: #f57f17; border-color: #f57f17; font-weight: 600; }
+.filter-btn.active-all     { background: #e8eaf6; color: #1a237e; border-color: #1a237e; font-weight: 600; }
+
+.balance-col { font-weight: 600; }
+.balance-zero { color: #2e7d32; }
+.balance-due  { color: #c62828; }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Fees Management</h2>
+<div class="page-top" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+    <h2>💳 Fees Management</h2>
+</div>
+
+<!-- Stats -->
+<div class="fee-stats">
+    <div class="fee-stat-box">
+        <div class="num num-blue">₹{{ total_amount }}</div>
+        <div class="lbl">Total Amount</div>
+    </div>
+    <div class="fee-stat-box">
+        <div class="num num-green">₹{{ total_paid }}</div>
+        <div class="lbl">Total Collected</div>
+    </div>
+    <div class="fee-stat-box">
+        <div class="num num-red">₹{{ total_due }}</div>
+        <div class="lbl">Total Due</div>
+    </div>
+    <div class="fee-stat-box">
+        <div class="num num-green">{{ count_paid }}</div>
+        <div class="lbl">Paid</div>
+    </div>
+    <div class="fee-stat-box">
+        <div class="num num-red">{{ count_unpaid }}</div>
+        <div class="lbl">Unpaid</div>
+    </div>
+    <div class="fee-stat-box">
+        <div class="num num-orange">{{ count_partial }}</div>
+        <div class="lbl">Partial</div>
+    </div>
+</div>
+
+<!-- Filters -->
+<form method="get" class="filter-bar">
+    <input type="text" name="q" value="{{ search }}" placeholder="Search by student name or ID...">
+    <input type="hidden" name="status" value="{{ status_filter }}">
+    <button type="submit" class="btn btn-primary" style="padding:8px 16px;">Search</button>
+    <a href="?status=" class="filter-btn {% if not status_filter %}active-all{% endif %}">All</a>
+    <a href="?status=paid" class="filter-btn {% if status_filter == 'paid' %}active-paid{% endif %}">✅ Paid</a>
+    <a href="?status=unpaid" class="filter-btn {% if status_filter == 'unpaid' %}active-unpaid{% endif %}">❌ Unpaid</a>
+    <a href="?status=partial" class="filter-btn {% if status_filter == 'partial' %}active-partial{% endif %}">⚠️ Partial</a>
+</form>
+
+<!-- Table -->
 <table class="table">
     <thead>
-        <tr><th>Student ID</th><th>Name</th><th>Description</th><th>Amount</th><th>Paid</th><th>Status</th><th>Due Date</th></tr>
+        <tr>
+            <th>#</th>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th>Due Date</th>
+        </tr>
     </thead>
     <tbody>
         {% for f in fees %}
+        {% with balance=f.amount|add:"-0" %}
         <tr>
-            <td>{{ f.student.student_id }}</td>
+            <td>{{ forloop.counter }}</td>
+            <td><strong>{{ f.student.student_id }}</strong></td>
             <td>{{ f.student.user.get_full_name }}</td>
             <td>{{ f.description }}</td>
-            <td>{{ f.amount }}</td>
-            <td>{{ f.paid_amount }}</td>
+            <td>₹{{ f.amount }}</td>
+            <td>₹{{ f.paid_amount }}</td>
+            <td class="balance-col {% if f.paid_amount >= f.amount %}balance-zero{% else %}balance-due{% endif %}">
+                ₹{{ f.amount|add:"-0" }}
+            </td>
             <td><span class="badge badge-{{ f.status }}">{{ f.get_status_display }}</span></td>
             <td>{{ f.due_date }}</td>
         </tr>
+        {% endwith %}
         {% empty %}
-        <tr><td colspan="7">No fee records.</td></tr>
+        <tr><td colspan="9" style="text-align:center;color:#888;padding:30px;">No fee records found.</td></tr>
         {% endfor %}
     </tbody>
 </table>

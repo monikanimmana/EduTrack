@@ -3,9 +3,9 @@ from rest_framework.routers import DefaultRouter
 from .views import FeeViewSet, fees_view
 
 router = DefaultRouter()
-router.register('fees', FeeViewSet)
+router.register('', FeeViewSet, basename='fees')
 
 urlpatterns = [
-    path('api/', include(router.urls)),
-    path('fees/', fees_view, name='fees'),
+    path('api/', include(router.urls)),   # /fees/api/
+    path('', fees_view, name='fees'),     # /fees/
 ]

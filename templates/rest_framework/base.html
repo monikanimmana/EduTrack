@@ -1,0 +1,215 @@
+{% load static %}
+{% load i18n %}
+{% load rest_framework %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% if name %}{{ name }} — {% endif %}SMS API{% endblock %}</title>
+
+  {% block style %}
+  <link rel="stylesheet" href="{% static 'rest_framework/css/bootstrap.min.css' %}"/>
+  <link rel="stylesheet" href="{% static 'rest_framework/css/prettify.css' %}"/>
+  <link rel="stylesheet" href="{% static 'rest_framework/css/default.css' %}"/>
+  {% if code_style %}<style>{{ code_style }}</style>{% endif %}
+  {% endblock %}
+
+  <style>
+    /* ── Reset navbar to SMS brand ── */
+    body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+
+    .navbar {
+      background: #1a237e !important;
+      border: none !important;
+      border-radius: 0 !important;
+      margin-bottom: 0 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .navbar .navbar-brand {
+      color: #fff !important;
+      font-size: 1.3rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 1px;
+      padding: 14px 0;
+    }
+    .navbar .navbar-brand:hover { color: #c5cae9 !important; }
+    .navbar .nav > li > a { color: #c5cae9 !important; }
+    .navbar .nav > li > a:hover { color: #fff !important; background: rgba(255,255,255,0.1) !important; }
+
+    /* ── API page header ── */
+    .content-main { padding: 30px 0; }
+
+    .page-header {
+      background: white;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      border: none;
+    }
+    .page-header h1 { color: #1a237e; font-size: 1.6rem; margin: 0 0 6px; }
+    .page-header p  { color: #666; margin: 0; font-size: 0.95rem; }
+
+    /* ── Breadcrumbs ── */
+    .breadcrumb {
+      background: white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      font-size: 0.88rem;
+    }
+    .breadcrumb > li + li::before { color: #1a237e; }
+    .breadcrumb a { color: #1a237e; }
+
+    /* ── Response / Request panels ── */
+    .panel { border-radius: 10px !important; border: none !important; box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important; margin-bottom: 20px; }
+    .panel-heading {
+      background: #1a237e !important;
+      color: white !important;
+      border-radius: 10px 10px 0 0 !important;
+      padding: 12px 20px !important;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .panel-body { padding: 20px !important; background: white; border-radius: 0 0 10px 10px; }
+
+    /* ── Buttons ── */
+    .btn-primary, .btn-default[data-toggle] {
+      background: #1a237e !important;
+      border-color: #1a237e !important;
+      color: white !important;
+      border-radius: 6px !important;
+    }
+    .btn-primary:hover { background: #283593 !important; border-color: #283593 !important; }
+    .btn-warning { border-radius: 6px !important; }
+    .btn-danger  { border-radius: 6px !important; }
+
+    /* ── Method badges ── */
+    .label-success { background: #2e7d32 !important; }
+    .label-warning { background: #f57f17 !important; }
+    .label-danger  { background: #c62828 !important; }
+    .label-info    { background: #1565c0 !important; }
+
+    /* ── Code / pre ── */
+    pre {
+      background: #1e1e2e !important;
+      color: #cdd6f4 !important;
+      border-radius: 8px !important;
+      padding: 16px !important;
+      font-size: 0.88rem !important;
+      border: none !important;
+    }
+
+    /* ── Forms ── */
+    .form-control { border-radius: 6px !important; border-color: #ddd !important; }
+    .form-control:focus { border-color: #1a237e !important; box-shadow: 0 0 0 2px rgba(26,35,126,0.15) !important; }
+
+    /* ── API root cards ── */
+    .table { border-radius: 8px; overflow: hidden; }
+    .table thead th { background: #1a237e; color: white; border: none; padding: 12px 16px; }
+    .table tbody td { padding: 12px 16px; vertical-align: middle; }
+    .table-bordered { border: none !important; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .table-bordered td, .table-bordered th { border-color: #f0f0f0 !important; }
+
+    /* ── Footer ── */
+    .version { color: #999; font-size: 0.8rem; text-align: center; padding: 20px 0; }
+
+    /* ── API root welcome banner ── */
+    .api-banner {
+      background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .api-banner-icon { font-size: 2.5rem; }
+    .api-banner h2 { margin: 0 0 4px; font-size: 1.4rem; }
+    .api-banner p  { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+
+    <!-- Navbar -->
+    <div class="navbar navbar-static-top" role="navigation">
+      <div class="container">
+        <span>
+          <a class="navbar-brand" href="/">🎓 SMS API</a>
+        </span>
+        <ul class="nav navbar-nav pull-right">
+          <li><a href="/auth/dashboard/">Dashboard</a></li>
+          <li><a href="/students/">Students</a></li>
+          <li><a href="/marks/">Marks</a></li>
+          <li><a href="/fees/">Fees</a></li>
+          <li><a href="/attendance/">Attendance</a></li>
+          {% block userlinks %}
+            {% if user.is_authenticated %}
+              {% optional_logout request user csrf_token %}
+            {% else %}
+              {% optional_login request %}
+            {% endif %}
+          {% endblock %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      {% block breadcrumbs %}
+      <ul class="breadcrumb">
+        {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+          {% if forloop.last %}
+            <li class="active">{{ breadcrumb_name }}</li>
+          {% else %}
+            <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+          {% endif %}
+        {% empty %}
+          <li class="active">Home</li>
+        {% endfor %}
+      </ul>
+      {% endblock %}
+
+      <!-- Main content -->
+      <div class="content-main">
+        {% block content %}
+
+        <!-- API Banner -->
+        <div class="api-banner">
+          <div class="api-banner-icon">⚡</div>
+          <div>
+            <h2>Student Management System — REST API</h2>
+            <p>Browse, test and interact with all API endpoints below. Use JWT token for authentication.</p>
+          </div>
+        </div>
+
+        <div class="page-header">
+          <h1>{{ name }}</h1>
+          {% if description %}<p>{{ description }}</p>{% endif %}
+        </div>
+
+        {% block request_forms %}{% endblock %}
+
+        {% block response %}{% endblock %}
+
+        {% endblock %}
+      </div>
+
+      <div class="version">Student Management System &copy; 2026 &nbsp;|&nbsp; Powered by Django REST Framework</div>
+    </div>
+  </div>
+
+  <script src="{% static 'rest_framework/js/jquery-3.7.1.min.js' %}"></script>
+  <script src="{% static 'rest_framework/js/ajax-form.js' %}"></script>
+  <script src="{% static 'rest_framework/js/csrf.js' %}"></script>
+  <script src="{% static 'rest_framework/js/prettify-min.js' %}"></script>
+  <script src="{% static 'rest_framework/js/default.js' %}"></script>
+  {% block script %}{% endblock %}
+</body>
+</html>

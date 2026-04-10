@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     # Local apps
-    'Student',
     'users',
     'students',
     'attendance',
