@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard">
+    <h2>Welcome, {{ user.get_full_name|default:user.username }} 👋</h2>
+    <p class="role-badge student">Student</p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>My Profile</h3>
+            <a href="{% url 'student_profile' %}" class="btn btn-primary">View Profile</a>
+        </div>
+        <div class="stat-card">
+            <h3>My Marks</h3>
+            <a href="{% url 'marks' %}" class="btn btn-primary">View Marks</a>
+        </div>
+        <div class="stat-card">
+            <h3>Fee Status</h3>
+            <a href="{% url 'fees' %}" class="btn btn-primary">View Fees</a>
+        </div>
+        <div class="stat-card">
+            <h3>Attendance</h3>
+            <a href="{% url 'attendance' %}" class="btn btn-primary">View Attendance</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

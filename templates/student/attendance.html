@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}My Attendance{% endblock %}
+{% block content %}
+<h2>My Attendance</h2>
+<table class="table">
+    <thead>
+        <tr><th>Subject</th><th>Date</th><th>Status</th><th>Method</th><th>Marked At</th></tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td>{{ r.session.subject.name }}</td>
+            <td>{{ r.session.date }}</td>
+            <td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td>
+            <td>{{ r.get_method_display }}</td>
+            <td>{{ r.marked_at|date:"d M Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No attendance records.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

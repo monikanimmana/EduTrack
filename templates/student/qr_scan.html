@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Scan QR Attendance{% endblock %}
+{% block extra_css %}
+<style>
+  #reader { width: 300px; margin: 20px auto; }
+  .scan-result { text-align: center; margin-top: 20px; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h2>Mark Attendance via QR</h2>
+    <p>Session: <strong>{{ session }}</strong></p>
+
+    {% if session.is_qr_valid %}
+    <div id="reader"></div>
+    <div class="scan-result" id="result"></div>
+
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script>
+        const token = "{{ token }}";
+        const csrfToken = "{{ csrf_token }}";
+
+        function onScanSuccess(decodedText) {
+            fetch('/attendance/api/qr-scan/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ qr_token: token })
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('result').innerHTML =
+                    `<p class="alert alert-success">${data.message || data.error}</p>`;
+            });
+        }
+
+        const html5QrCode = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrCode.render(onScanSuccess);
+    </script>
+    {% else %}
+    <p class="alert alert-error">This QR code has expired or is no longer active.</p>
+    {% endif %}
+</div>
+{% endblock %}

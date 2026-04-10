@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard">
+    <h2>Welcome, {{ user.get_full_name|default:user.username }} 👋</h2>
+    <p class="role-badge teacher">Teacher</p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Students</h3>
+            <a href="{% url 'student_list' %}" class="btn btn-primary">Manage Students</a>
+        </div>
+        <div class="stat-card">
+            <h3>Marks</h3>
+            <a href="{% url 'marks' %}" class="btn btn-primary">Manage Marks</a>
+        </div>
+        <div class="stat-card">
+            <h3>Fees</h3>
+            <a href="{% url 'fees' %}" class="btn btn-primary">Manage Fees</a>
+        </div>
+        <div class="stat-card">
+            <h3>Attendance</h3>
+            <a href="{% url 'attendance' %}" class="btn btn-primary">Manage Attendance</a>
+        </div>
+    </div>
+
+    <div class="quick-links">
+        <h3>API Endpoints</h3>
+        <ul>
+            <li><a href="/students/api/students/" target="_blank">Students API</a></li>
+            <li><a href="/marks/api/marks/" target="_blank">Marks API</a></li>
+            <li><a href="/fees/api/fees/" target="_blank">Fees API</a></li>
+            <li><a href="/attendance/api/sessions/" target="_blank">Sessions API</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
