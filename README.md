@@ -1,4 +1,4 @@
-# 🎓 Smart Scalable Student Management System
+# 🎓 EduTrack — School Management System
 
 ![Django](https://img.shields.io/badge/Django-6.0-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/DRF-3.16-red?style=for-the-badge&logo=django&logoColor=white)
@@ -6,14 +6,14 @@
 ![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 
-A full-featured, role-based Student Management System built with **Django**, **Django REST Framework**, **HTML/CSS**, and **Python**. Supports Admin, Teacher, and Student roles with QR-based attendance, marks management, fee tracking, and REST APIs.
+A full-featured, role-based School Management System built with **Django**, **Django REST Framework**, **HTML/CSS**, and **Python**. Supports Admin, Teacher, and Student roles with QR-based attendance, marks management, fee tracking, and REST APIs.
 
 ---
 
 ## 📸 Screenshots
 
 ### 🔐 Login Page
-![Login](https://via.placeholder.com/900x450?text=Login+Page)
+![Login](https://via.placeholder.com/900x450?text=EduTrack+Login+Page)
 
 ### 👑 Admin Dashboard
 ![Admin Dashboard](https://via.placeholder.com/900x450?text=Admin+Dashboard)
@@ -62,7 +62,7 @@ A full-featured, role-based Student Management System built with **Django**, **D
 ## 🏗️ Project Structure
 
 ```
-student_management_system/
+EduTrack/
 │
 ├── Student_Management/         # Project settings & root URLs
 │   ├── settings.py
@@ -189,8 +189,8 @@ CustomUser          → role: admin / teacher / student
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/monikanimmana/student_management_system.git
-cd student_management_system
+git clone https://github.com/monikanimmana/EduTrack.git
+cd EduTrack
 ```
 
 ### 2. Create and activate virtual environment
