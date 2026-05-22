@@ -4,7 +4,7 @@ import django
 import random
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Student_Management.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "EduTrack.settings")
 django.setup()
 
 from django.utils import timezone

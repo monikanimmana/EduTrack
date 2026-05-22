@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{% if name %}{{ name }} — {% endif %}SMS API{% endblock %}</title>
+    <title>{% block title %}{% if name %}{{ name }} — {% endif %}EduTrack API{% endblock %}</title>
 
   {% block style %}
   <link rel="stylesheet" href="{% static 'rest_framework/css/bootstrap.min.css' %}"/>
@@ -140,7 +140,7 @@
     <div class="navbar navbar-static-top" role="navigation">
       <div class="container">
         <span>
-          <a class="navbar-brand" href="/">🎓 SMS API</a>
+          <a class="navbar-brand" href="/">🎓 EduTrack API</a>
         </span>
         <ul class="nav navbar-nav pull-right">
           <li><a href="/auth/dashboard/">Dashboard</a></li>
@@ -184,7 +184,7 @@
         <div class="api-banner">
           <div class="api-banner-icon">⚡</div>
           <div>
-            <h2>Student Management System — REST API</h2>
+            <h2>EduTrack — REST API</h2>
             <p>Browse, test and interact with all API endpoints below. Use JWT token for authentication.</p>
           </div>
         </div>
@@ -201,7 +201,7 @@
         {% endblock %}
       </div>
 
-      <div class="version">Student Management System &copy; 2026 &nbsp;|&nbsp; Powered by Django REST Framework</div>
+      <div class="version">EduTrack &copy; 2026 &nbsp;|&nbsp; Powered by Django REST Framework</div>
     </div>
   </div>
 

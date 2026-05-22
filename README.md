@@ -64,7 +64,7 @@ A full-featured, role-based School Management System built with **Django**, **Dj
 ```
 EduTrack/
 │
-├── Student_Management/         # Project settings & root URLs
+├── EduTrack/                   # Project settings & root URLs
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
