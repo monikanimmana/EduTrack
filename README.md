@@ -13,7 +13,8 @@ A full-featured, role-based School Management System built with **Django**, **Dj
 ## 📸 Screenshots
 
 ### 🔐 Login Page
-![Login](https://via.placeholder.com/900x450?text=EduTrack+Login+Page)
+![Login](<img width="1908" height="1073" alt="image" src="https://github.com/user-attachments/assets/d642d357-4ee2-499b-b663-8e92479719a3" />
+)
 
 ### 👑 Admin Dashboard
 ![Admin Dashboard](https://via.placeholder.com/900x450?text=Admin+Dashboard)
