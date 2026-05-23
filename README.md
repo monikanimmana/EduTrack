@@ -13,26 +13,31 @@ A full-featured, role-based School Management System built with **Django**, **Dj
 ## 📸 Screenshots
 
 ### 🔐 Login Page
-<img width="1918" height="1074" alt="admin_page" src="https://github.com/user-attachments/assets/df566841-912a-4873-bdd5-19a8d1db2a62" />
+<img width="1918" height="1074" alt="admin_page" src="https://github.com/user-attachments/assets/ca27d1a4-8f34-49b5-a81d-fe756b06d1de" />
+
 
 
 ### 👑 Admin Dashboard
-![Admin Dashboard](https://via.placeholder.com/900x450?text=Admin+Dashboard)
+<img width="1918" height="1074" alt="admin_page" src="https://github.com/user-attachments/assets/df566841-912a-4873-bdd5-19a8d1db2a62" />
 
 ### 👨‍🏫 Teacher Dashboard
-![Teacher Dashboard](https://via.placeholder.com/900x450?text=Teacher+Dashboard)
+<img width="1917" height="1074" alt="student_dashboard" src="https://github.com/user-attachments/assets/c58ba3bb-a3b8-4d9e-8527-12640fffcd84" />
+
 
 ### 👨‍🎓 Student Dashboard
-![Student Dashboard](https://via.placeholder.com/900x450?text=Student+Dashboard)
+<img width="1910" height="763" alt="Screenshot 2026-05-22 214627" src="https://github.com/user-attachments/assets/ff1e4c3d-1aca-42a2-ba83-caca57658f41" />
 
 ### 📝 Marks Management
-![Marks](https://via.placeholder.com/900x450?text=Marks+Management)
+<img width="1897" height="989" alt="marks_dashboard" src="https://github.com/user-attachments/assets/7c990245-2366-4e84-886d-20d885e28a75" />
+
 
 ### 📅 Attendance with QR Code
-![Attendance](https://via.placeholder.com/900x450?text=Attendance+QR+Code)
+<img width="1918" height="721" alt="attendence_" src="https://github.com/user-attachments/assets/9dea8818-2f9b-495e-bc6b-2b529c001e13" />
+
 
 ### 💳 Fees Management
-![Fees](https://via.placeholder.com/900x450?text=Fees+Management)
+<img width="1899" height="1073" alt="attendence_QR" src="https://github.com/user-attachments/assets/c00ddb2b-f8ab-4e4c-918c-be2c40a87852" />
+
 
 > 💡 Replace placeholder images with real screenshots by adding images to a `/screenshots` folder and updating the paths above.
 
