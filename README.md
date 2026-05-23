@@ -18,7 +18,8 @@ A full-featured, role-based School Management System built with **Django**, **Dj
 
 
 ### 👑 Admin Dashboard
-<img width="1918" height="1074" alt="admin_page" src="https://github.com/user-attachments/assets/df566841-912a-4873-bdd5-19a8d1db2a62" />
+<img width="1919" height="1062" alt="login_page" src="https://github.com/user-attachments/assets/39c6a47a-bdd0-4894-81ca-90d28758c577" />
+
 
 ### 👨‍🏫 Teacher Dashboard
 <img width="1917" height="1074" alt="student_dashboard" src="https://github.com/user-attachments/assets/c58ba3bb-a3b8-4d9e-8527-12640fffcd84" />
